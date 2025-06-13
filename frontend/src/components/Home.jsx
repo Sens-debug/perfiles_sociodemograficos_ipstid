@@ -1,4 +1,10 @@
+import { useNavigate } from "react-router-dom";
+
 function Home(){
+    const navegador = useNavigate() 
+    const manejarRedireccionEntradaAFormualrio =()=>{
+        navegador("/login")
+    }
     return(
         <div className="h-[100vh] bg-gray-200  p-8 " >
             <div className="flex flex-col bg-gray-800 rounded-xl ">
@@ -46,6 +52,9 @@ function Home(){
                             </p>
                         </div>
                     </div>
+                </div>
+                <div className="">
+                    <button onClick={manejarRedireccionEntradaAFormualrio} className="w-full h-full text-center border-2 rounded-xl  p-2 bg-blue-300 hover:bg-blue-500 transition">Continuar al Diligenciamiento</button>
                 </div>
         </div>
     )
