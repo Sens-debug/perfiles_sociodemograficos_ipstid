@@ -21,9 +21,9 @@ function Form () {
 
     return( 
         <div className="bg-red-600 w-screen h-screen">
-            <div className="bg-blue-500 flex flex-column">
+            <div className="bg-blue-500 flex flex-column ">
                 <div>
-                    <h1>bjhdg</h1>
+                    
                 </div>
 
             </div>
