@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import  CORS
 from ..api.api import API
 import pymssql
+from time import sleep
+import random
 # from os import getenv
 # from dotenv import load_dotenv
 # load_dotenv()
@@ -25,12 +27,14 @@ def sas():
     b = a[0][0]
     # print(type(b))
     if b !="1":
+        opciones = [10,500,40,8000,9,50,200,300,10,20,45,78]     
         conn2.close()
         cursor3.close()
-        return jsonify({"estado":False})
+        sleep(random.randint(0,len(opciones)-1))
+        return jsonify({"":""})
     cursor3.close()
     conn2.close()
-    return jsonify({"estado":True})
+    return jsonify({"":""})
 
 @app.route("/traer_usuarios", methods=["GET"])
 def traer_usuarios():

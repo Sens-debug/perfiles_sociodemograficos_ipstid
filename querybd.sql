@@ -69,7 +69,13 @@ create table usuarios(id int primary key auto_increment,
                         Foreign Key (cargo) references cargos_ocultos (id)
                         );
 
-
+create table metadatos_aceptacion_tratamiento_datos(id int primary key auto_increment,
+                                                    fecha_aceptacion date,
+                                                    direccion_ip varchar(30),
+                                                    navegador varchar(40),
+                                                    usuario_id int,
+                                                    Foreign Key (usuario_id) references usuarios (id)
+                                                    );
 
 create table respuestas_formulario(id int primary key auto_increment,
                                     usuario_id int,
@@ -139,37 +145,12 @@ insert into estratos_socioeconomicos (id,estrato) values (1,"1"),(2,"2"),(3,"3")
 insert into grupos_sanguineos (id,grupo_sanguineo) values (1,"0"),(2,"A"),(3,"B"),(4,"AB");
 insert into rhs (id,rh) values (1,"-"),(2,"+");
 
-INSERT INTO epss (id, eps) VALUES
-(1, 'NUEVA EPS'),
-(2, 'SURA'),
-(3, 'SANITAS'),
-(4, 'SALUD TOTAL'),
-(5, 'COMPENSAR'),
-(6, 'FAMISANAR'),
-(7, 'COOMEVA EPS'),
-(8, 'MEDIMÁS'),
-(9, 'ALIANSALUD'),
-(10, 'SOS EPS'),
-(11, 'ECOOPSOS'),
-(12, 'EMSSANAR'),
-(13, 'ASMET SALUD'),
-(14, 'CAPRESOCA'),
-(15, 'MUTUAL SER'),
-(16, 'SAVIA SALUD'),
-(17, 'DUSAKAWI EPSI'),
-(18, 'PIJAOS SALUD EPSI'),
-(19, 'MALLAMAS EPSI'),
-(20, 'AIC EPSI');
+INSERT INTO epss (id, eps) VALUES(1, 'NUEVA EPS'),(2, 'SURA'),(3, 'SANITAS'),(4, 'SALUD TOTAL'),(5, 'COMPENSAR'),(6, 'FAMISANAR'),(7, 'COOMEVA EPS'),(8, 'MEDIMÁS')
+,(9, 'ALIANSALUD'),(10, 'SOS EPS'),(11, 'ECOOPSOS'),(12, 'EMSSANAR'),(13, 'ASMET SALUD'),(14, 'CAPRESOCA'),(15, 'MUTUAL SER'),(16, 'SAVIA SALUD'),(17, 'DUSAKAWI EPSI'),
+(18, 'PIJAOS SALUD EPSI'),(19, 'MALLAMAS EPSI'),(20, 'AIC EPSI');
 
-INSERT INTO fondos_pension (id, fondo_pension) VALUES
-(1, 'COLFONDOS'),
-(2, 'PROTECCIÓN'),
-(3, 'PORVENIR'),
-(4, 'SKANDIA'),
-(5, 'FONDO NACIONAL DE PRESTACIONES SOCIALES DEL MAGISTERIO - FOMAG'),
-(6, 'CÁJANAL'),
-(7, 'FERROCARRILES NACIONALES'),
-(8, 'INSTITUTO DE SEGUROS SOCIALES-ISS');
+INSERT INTO fondos_pension (id, fondo_pension) VALUES (1, 'COLFONDOS'),(2, 'PROTECCIÓN'),(3, 'PORVENIR'),(4, 'SKANDIA'),
+(5, 'FONDO NACIONAL DE PRESTACIONES SOCIALES DEL MAGISTERIO - FOMAG'),(6, 'CÁJANAL'),(7, 'FERROCARRILES NACIONALES'),(8, 'INSTITUTO DE SEGUROS SOCIALES-ISS');
 
 insert into tipos_cohabitacion(id,tipo) values (1,"Familia"),(2,"Particulares"),(3,"Solo"),(4,"Otro");
 insert into tipos_contrato (id,tipo_contrato) values (1,"Personal Vinculado"),(2,"Prestacion de Servicios"),
@@ -182,4 +163,6 @@ insert into cargos_ocultos (id,cargo) values (4,'AuditorPefilSocioDemografico');
 insert into tipos_transporte (id,transporte) values (1,"Publico"),(2,"Moto"),(3,"Carro"),(4,"Bicicleta");
 insert into niveles_educativos (id, nivel) values (1,"Primaria"),(2,"Secundaria"),(3,"Universitario"),(4,"Postgrado"),(5,"Maestria");
 
-insert into usuarios (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario) values ("Luz","Bibiana","Tobón","Mazo","0000000","KETI","BIBI",0);
+insert into usuarios (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
+ cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo,valido_para_diligenciamiento) 
+values ("Luz","Bibiana","Tobón","Mazo","0000000","KETI","BIBI",0,4,null);
