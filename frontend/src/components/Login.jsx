@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 
+
 function InicioSesion(){
      //Seteamos las variables 'reactivas' con las que vamos a trabaj en este modulo
     const [usuario, setUsuario] = useState('');
@@ -10,6 +11,7 @@ function InicioSesion(){
     //Con este hook manejamos la navegacion por el sistema
     const navegacion = useNavigate();
     const uri_flask = import.meta.env.VITE_URL_SERVIDOR
+    console.log(uri_flask)
 
     const manejarEnvio =(variableControl) => {
         variableControl.preventDefault();

@@ -1,9 +1,10 @@
 import InicioSesion from "./components/Login";
 import NotFound from './components/NotFound';
 import Home from './components/Home';
-import Form from './components/Form';
+import Form from './components/PanelUsuario';
 import './index.css'
-import { BrowserRouter,Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
+
 
 
 

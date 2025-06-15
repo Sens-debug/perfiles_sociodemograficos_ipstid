@@ -16,22 +16,31 @@ class API(mysql.connector.MySQLConnection):
         
     def crear_usuario(self,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,numero_cedula
                       ,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo):
-        '''Funcion encargada de la creacion de usuarios a traves de la BD,
+        '''Si ya hay usuario con esa cedula retorna False||Si hay errores retorna Array.
         Recibe los parametros de insercion.
         Retorna String y Boolean.
         En los errores retorna Strign y array  '''
         if not self.is_connected():
             self.connect()
-        cursor=self.cursor()
+        cursor=self.cursor(buffered=True)
         errores = []
         try:
             cursor.execute("select * from usuarios where cedula_ciudadania = %s",(numero_cedula,))
-            if cursor.fetchone():
+            existe_cedula =cursor.fetchone()
+            if existe_cedula:
                 cursor.close()
                 self.close()
                 return "Cedula asignada a otro usuario",False
+            
+            cursor.execute("select * from usuarios where contraseña_usuario = %s",(contraseña_usuario,))
+            existe_contraseña = cursor.fetchone()
+            if existe_contraseña:
+                cursor.close()
+                self.close()
+                return "Contraseña Asignada a otro Usuario",False
+            
 
-            if cargo == None:
+            if cargo == None or cargo == 'null':
                 cursor.execute("""insert into usuarios 
                            (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
                            cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo,valido_para_diligenciamiento)
@@ -54,21 +63,35 @@ class API(mysql.connector.MySQLConnection):
             errores.append(e)
             cursor.close()
             self.close()
+            print(errores)
             return "Algunos errores ocurrieron", errores
 
-    def traer_usuarios(self):
+    def traer_todos_usuarios(self):
         '''Retorna solo un elemento en formato Diccionario'''
         if not self.is_connected():
             self.connect()
         cursor = self.cursor(dictionary=True)
         errores = []
         try:
-            cursor.execute("select * from usuarios")
+            cursor.execute("""select Concat_ws(' ',primer_nombre,segundo_nombre,
+                             primer_apellido,segundo_apellido) nombre_Completo,
+                             cedula_ciudadania, nombre_usuario,contraseña_usuario,
+                             cargos.cargo,
+                             cargos_ocultos.cargo auditor,
+                             usuarios.valido_para_diligenciamiento falta_por_diligenciar
+                                from usuarios 
+                                Left join respuestas_formulario on usuarios.id=respuestas_formulario.usuario_id
+                                left Join cargos on cargos.id=respuestas_formulario.cargo 
+                                left Join cargos_ocultos on cargos_ocultos.id=usuarios.cargo 
+                            """)
             res = cursor.fetchall()
             if res:
                 cursor.close()
                 self.close()
                 return res
+            cursor.close()
+            self.close()
+            return False
         except Exception as e:
             errores.append(e)
             cursor.close()
