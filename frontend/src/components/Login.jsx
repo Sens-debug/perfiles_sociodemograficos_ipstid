@@ -10,12 +10,6 @@ function InicioSesion(){
     //Con este hook manejamos la navegacion por el sistema
     const navegacion = useNavigate();
     const uri_flask = import.meta.env.VITE_URL_SERVIDOR
-    // const [valido, setValido] = useState()
-
-    // useEffect(()=> {
-    //     fetch(uri_flask+"/comprobacion").then(response => response.json()).then(data => setValido(data.estado) )
-    // },[])
-
 
     const manejarEnvio =(variableControl) => {
         variableControl.preventDefault();
@@ -30,15 +24,14 @@ function InicioSesion(){
         .then(data =>{setMensaje(data.estado)
             //Condicional ternario que verifica si el login fue exitoso, posterior a eso envia la data del fetch a traves de stados de React
             data.loguea==true?navegacion('/app',{state:{"datos":data.datos}}):''
-        })
+                        }
+            )
         .catch(error => {
             console.error('ERROR:', error)
             setMensaje('Ocurrio un error durante el fetch')
         });
     };
-        // if (valido== false){
-        //     return <h1 className=" text-red-600 bg-white text-center">ERROR</h1>
-        // }
+        
 return(
         <div className=" bg-gray-700 justify-center min-h-screen flex items-center">
             
