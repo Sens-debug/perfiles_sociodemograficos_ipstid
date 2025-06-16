@@ -19,6 +19,8 @@ function Formi () {
         }
 
     },[])
+
+
     if (datos_recibidos_login.cargo ==4){
         async function traerUsuariosTablaDatos(e){
             e.preventDefault()
@@ -28,6 +30,9 @@ function Formi () {
          .catch(error => console.log(error))
         }
         
+        async function actualizarEstadoDiligenciamiento(e){
+            
+        }
 
 
         async function enviarDatosCreacionUsuario(e){
@@ -160,6 +165,11 @@ function Formi () {
                             Crear Usuario
                         </Button>
                     </div>
+                </Form>
+
+                <Form
+                onSubmit={}>
+
                 </Form>
                 <button onClick={traerUsuariosTablaDatos}>fgjkfhg</button>
 
