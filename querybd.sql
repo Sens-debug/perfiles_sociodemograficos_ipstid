@@ -1,3 +1,7 @@
+create database perfiles_sociodemograficos;
+
+use perfiles_sociodemograficos;
+
 create table tipos_vivienda(id int primary key,
                             tipo varchar(30)
                             );
@@ -163,6 +167,6 @@ insert into cargos_ocultos (id,cargo) values (4,'AuditorPefilSocioDemografico');
 insert into tipos_transporte (id,transporte) values (1,"Publico"),(2,"Moto"),(3,"Carro"),(4,"Bicicleta");
 insert into niveles_educativos (id, nivel) values (1,"Primaria"),(2,"Secundaria"),(3,"Universitario"),(4,"Postgrado"),(5,"Maestria");
 
-insert into usuarios (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
- cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo,valido_para_diligenciamiento) 
-values ("Luz","Bibiana","Tobón","Mazo","0000000","KETI","BIBI",0,4,null);
+insert into usuarios (id,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
+ cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo_id,valido_para_diligenciamiento) 
+values (null,"Luz","Bibiana","Tobón","Mazo","0000000","KETI","BIBI","0",4,1);

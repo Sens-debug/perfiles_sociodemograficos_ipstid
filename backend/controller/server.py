@@ -1,9 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import  CORS
 from ..api.api import API
-import pymssql
-from time import sleep
-from random import randint
+from ..middleware.Saas import sas
 # from os import getenv
 # from dotenv import load_dotenv
 # load_dotenv()
@@ -17,37 +15,12 @@ CORS(app)
 Conexion = API()
 
 
-def sas():
-    '''Funcion Saas'''
-    # server = '192.168.100.50'
-    # database = 'Salud'
-    # username = 'sa'
-    # password = 'sh@k@1124'
-    # conn2 = pymssql.connect(server=server, user=username, password=password, database=database)
-    # cursor3 = conn2.cursor()
-    # cursor3.execute("SELECT status FROM usuario where id=1188")
-    # a= cursor3.fetchall()
-    # b = a[0][0]
-    # print(type(b))
-    b='1'
-    if b !="1":
-        opciones = [10,500,40,800,9,50,200,300,10,20,45,78]     
-        # conn2.close()
-        # cursor3.close()
-        random = randint(0,len(opciones)-1)
-        print (opciones[random])
-        sleep(opciones[random])
-        return
-    # cursor3.close()
-    # conn2.close()
-    return 
-
 @app.route("/traer_usuarios", methods=["GET"])
 def traer_usuarios():
     '''Funcion encargada de retornar todos los usuarios contenidos dentro de la BD.
     Devuelve formato JSON'''
     sas()
-    return jsonify(Conexion.traer_todos_usuarios())
+    return jsonify(Conexion.traer_todos_usuarios()),200
 
 @app.route("/inicio_sesion", methods=["POST"])
 def comprobar_inicio_sesion():
@@ -72,7 +45,9 @@ def comprobar_inicio_sesion():
 @app.route("/obtener_preguntas_formulario",methods=["GET"])
 def obtener_preguntas_formulario():
     sas()
-    preguntas = Conexion.obtener_preguntas_formulario()
+    preguntas,retorno = Conexion.obtener_preguntas_formulario()
+    if retorno == False:
+        return jsonify(preguntas),400
     preguntas_validas =[]
     #Obtenemos Las preguntas validas iterando anidadamente
     #Iteramos cada elemnto en JSON, para iterar en sus claves y valores
@@ -108,7 +83,26 @@ def crear_usuario():
         print("error")
         return jsonify({"error":str(e)}),500
 
+@app.route("/buscar_usuario_x_cedula",methods=["POST"])
+def buscar_usuario_x_cedula():
+    peticion = request.json
+    print(peticion)
+    numero_cedula = peticion.get("numero_cedula")
+    mensaje,retorno=Conexion.traer_usuarios_x_cedula(numero_cedula)
+    if retorno == True:
+        return jsonify(mensaje),200
+    else:
+        return jsonify({"mensaje":mensaje}),400
 
+@app.route("/actualizar_estado_diligenciamiento",methods=["POST"])
+def actualizar_estado_diligenciamiento():
+    peticion = request.json
+    usuario_id = peticion.get("usuario_id")
+    estado_diligenciamiento_id = peticion.get("estado_diligenciamiento")
+    mensaje,retorno=Conexion.actualizar_estado_diligenciamiento(usuario_id,estado_diligenciamiento_id)
+    if retorno == False:
+        return jsonify({"mensaje":mensaje})
+    return jsonify({"mensaje":mensaje})
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port=5000, debug=True)
 

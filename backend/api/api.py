@@ -43,7 +43,7 @@ class API(mysql.connector.MySQLConnection):
             if cargo == None or cargo == 'null':
                 cursor.execute("""insert into usuarios 
                            (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
-                           cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo,valido_para_diligenciamiento)
+                           cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo_id,valido_para_diligenciamiento)
                                Values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                            (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
                             numero_cedula,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,None,1)
@@ -51,7 +51,7 @@ class API(mysql.connector.MySQLConnection):
             else:
                  cursor.execute("""insert into usuarios 
                            (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
-                           cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo,valido_para_diligenciamiento)
+                           cedula_ciudadania,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo_id,valido_para_diligenciamiento)
                                Values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                            (primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,
                             numero_cedula,lugar_expedicion_cedula,nombre_usuario,contraseña_usuario,cargo,1)
@@ -75,28 +75,55 @@ class API(mysql.connector.MySQLConnection):
         try:
             cursor.execute("""select Concat_ws(' ',primer_nombre,segundo_nombre,
                              primer_apellido,segundo_apellido) nombre_Completo,
-                             cedula_ciudadania, nombre_usuario,contraseña_usuario,
+                             cedula_ciudadania, nombre_usuario,contraseña_usuario nombre_completo,
                              cargos.cargo,
                              cargos_ocultos.cargo auditor,
-                             usuarios.valido_para_diligenciamiento falta_por_diligenciar
+                             usuarios.valido_para_diligenciamiento falta_por_diligenciar,
+                             usuarios.contraseña_usuario contraseña
                                 from usuarios 
                                 Left join respuestas_formulario on usuarios.id=respuestas_formulario.usuario_id
-                                left Join cargos on cargos.id=respuestas_formulario.cargo 
-                                left Join cargos_ocultos on cargos_ocultos.id=usuarios.cargo 
+                                left Join cargos on cargos.id=respuestas_formulario.cargo_id
+                                left Join cargos_ocultos on cargos_ocultos.id=usuarios.cargo_id 
                             """)
-            res = cursor.fetchall()
+            res = cursor.fetchall()        
             if res:
                 cursor.close()
-                self.close()
+                self.close()     
                 return res
             cursor.close()
             self.close()
-            return False
+            return {"Estado":False}
         except Exception as e:
             errores.append(e)
             cursor.close()
             self.close()
             return errores
+
+    def traer_usuarios_x_cedula(self,numero_cedula):
+        '''Retorna 2 elementos, [Array] y Boolean.
+        Manejando la data y el controlador de estado'''
+        if not self.is_connected():
+            self.connect()
+        errores =[]
+        try:   
+            cursor=self.cursor(dictionary=True)
+            cursor.execute("""select Concat_ws(' ',primer_nombre,segundo_nombre,primer_apellido,segundo_apellido) nombre_completo,
+                           id,cedula_ciudadania from usuarios 
+                           where cedula_ciudadania =%s""",(numero_cedula,))
+            usuario_seleccionado = cursor.fetchall()
+            if usuario_seleccionado:
+                cursor.close()
+                self.close()
+                return usuario_seleccionado,True
+            cursor.close()
+            self.close()
+            errores.append("Usuario no Encontrado")
+            return errores,False
+        except Exception as e:
+            cursor.close()
+            self.close()
+            errores.append(e)
+            return errores,False
 
     def comprobar_inicio_sesion(self,nombre_usuario,contraseña_usuario):
         '''Comprueba la existencia de un usuario según las 2 credenciales de acceso.
@@ -124,9 +151,7 @@ class API(mysql.connector.MySQLConnection):
             return errores,False
         
     def obtener_preguntas_formulario(self):
-        '''Retorna 1 valor-> JSON cuando la query es exitosa,
-        Array cuando hay error,
-        O String cuando no encuentra nada'''
+        '''Retorna 2 valores-> {JSON} y Boolean'''
         if not self.is_connected():
             self.connect()
         errores = []
@@ -139,10 +164,31 @@ class API(mysql.connector.MySQLConnection):
                            )
             preguntas = cursor.fetchall()
             if preguntas:
-                return preguntas
-            return "No encontró Preguntas"
+                return preguntas,True
+            errores.append("No encontró Preguntas")
+            return {"mensaje":errores},False
         except Exception as e:
             errores.append(e)
             cursor.close()
             self.close()
-            return errores
+            return {"errores":errores},False
+
+    def actualizar_estado_diligenciamiento(self,id,estado_diligenciamiento):
+        '''Retorna 2 valores -> [Array] y Boolean'''
+        if not self.is_connected():
+            self.connect()
+        errores =[]
+        try:
+            cursor = self.cursor()
+            cursor.execute("""update usuarios 
+                           set valido_para_diligenciamiento =%s where usuarios.id=%s """,(estado_diligenciamiento,id))
+            self.commit()
+            errores.append("Actualizacion Exitosa")
+            cursor.close()
+            self.close()
+            return errores,True
+        except Exception as e:
+            errores.append(e)
+            cursor.close()
+            self.close()
+            return errores,False
