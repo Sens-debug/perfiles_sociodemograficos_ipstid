@@ -8,7 +8,8 @@ function Formi () {
     const datos = location.state||{};
     const datos_recibidos_login = datos.datos||{}
     const uri_flask = import.meta.env.VITE_URL_SERVIDOR
-    const [preguntas, setPreguntas] = useState([])
+    const [preguntasTexto, setPreguntasTexto] = useState([])
+    const [selectoresFormulario, setSelectoresFormularios] = useState([])
     const [estadoCreacionUsuario,setEstadoCreacionUsuario] = useState()
     const [datosTablaUsuarios,setDatosTablaUsuarios] = useState([])
     const [cedulaUsuarioABuscar, setCedulaUsuarioABuscar] = useState()
@@ -21,7 +22,7 @@ function Formi () {
     useEffect(()=>{
         if (datos_recibidos_login.cargo!=4){
         
-             fetch(uri_flask+"/obtener_preguntas_formulario").then(response => response.json()).then(data =>{setPreguntas(data.preguntas); console.log(data.preguntas)} )            
+             fetch(uri_flask+"/obtener_preguntas_formulario").then(response => response.json()).then(data =>{setPreguntasTexto(data.preguntas_texto.texto); setSelectoresFormularios(data.datos_selectores); console.log(data);} )            
         }
             
         
@@ -325,15 +326,49 @@ function Formi () {
         )
     }
 
-    
+    console.log(preguntasTexto)
+    console.log(Object.entries(selectoresFormulario))
     return( 
-        <div className=" w-screen h-screen">
-            <div className="bg-blue-500 flex flex-column ">
-                <div>
-                    {preguntas.map((pregunta)=>(
-                        <h1 key='1'>{pregunta}</h1>
-                    ))}
-                </div>
+        <div className=" bg-black w-full h-full ">
+            <div className=" flex flex-column ">
+                <Form
+                className="flex flex-wrap bg-white border-2 min-w-3/4 max-w-full">
+                    <h1 className="text-center">Perfil Sociodemografico</h1>
+                    <div>
+                        {preguntasTexto.map((pregunta,id)=>(
+                            <Input
+                            className="flex flex-wrap border-2 mb-3"
+                            isRequired
+                            label={pregunta}
+                            labelPlacement="outside"
+                            placeholder="##"
+                            />
+                        ))}
+                    </div>
+                    <br />
+                    <div>
+                        {Object.entries(selectoresFormulario).map(([categoria,lista])=>(
+                        <Select 
+
+                        className="bg-white text-center border-2 mb-2 overflow-y-auto"
+                        isRequired
+                        label={categoria}
+                        labelPlacement="outside"
+                        name={categoria}
+                        >
+                            {lista.map((elemento)=>(
+                            <SelectItem 
+                            key={elemento[1]}
+                            className="bg-white border-2 ">
+                                {elemento[0]}
+                            </SelectItem>
+
+                            ))}
+                            
+                        </Select>
+                        ))}
+                    </div>
+                </Form>
 
             </div>
         </div>

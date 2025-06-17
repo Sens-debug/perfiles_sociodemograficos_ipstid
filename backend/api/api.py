@@ -173,6 +173,42 @@ class API(mysql.connector.MySQLConnection):
             self.close()
             return {"errores":errores},False
 
+    def obtener_selectores_formulario(self):
+        '''Retorna Json de Arrays {[]} y Boolean'''
+        if not self.is_connected():
+            self.connect()
+        consumibles = {'estados_civiles':'estado_civil',
+                      'tipos_vivienda':'tipo',
+                      'estratos_socioeconomicos':'estrato',
+                      'grupos_sanguineos':'grupo_sanguineo',
+                      'rhs':'rh',
+                      'epss':'eps',
+                      'fondos_pension':'fondo_pension',
+                      'tipos_cohabitacion':'tipo',
+                      'tipos_contrato':'tipo_contrato',
+                      'empresas':'empresa',
+                      'areas':'area',
+                      'cargos':'cargo',
+                      'tipos_transporte':'transporte',
+                      'niveles_educativos':'nivel'
+                      }
+        selectores = {}
+        errores ={}
+        try:
+            cursor = self.cursor()
+            for k,v in consumibles.items():
+                cursor.execute(f"select {v}, id from {k}")
+                selectores[k]=cursor.fetchall()
+            cursor.close()
+            self.close()
+            return selectores,True
+        except Exception as e:
+            errores["errores"]=[e]
+            cursor.close()
+            self.close()
+            return errores,False
+        
+        
     def actualizar_estado_diligenciamiento(self,id,estado_diligenciamiento):
         '''Retorna 2 valores -> [Array] y Boolean'''
         if not self.is_connected():
